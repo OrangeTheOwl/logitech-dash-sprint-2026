@@ -12,39 +12,39 @@ interface MouseVisualizationProps {
 
 const pointMap: Record<string, { x: number; y: number; label: string; card: string; line: string }> = {
   "left-click": {
-    x: 49,
-    y: 35,
+    x: 47,
+    y: 20,
     label: "Left button",
-    card: "left-[15%] top-[30%]",
-    line: "left-[29%] top-[35%] h-[2px] w-[20%]",
+    card: "left-[13%] top-[15%]",
+    line: "left-[27%] top-[20%] h-[2px] w-[19%]",
   },
   "right-click": {
-    x: 54,
-    y: 30,
+    x: 56,
+    y: 25,
     label: "Right button",
-    card: "left-[65%] top-[24%]",
-    line: "left-[55%] top-[29%] h-[2px] w-[10%]",
+    card: "left-[67%] top-[19%]",
+    line: "left-[57%] top-[24%] h-[2px] w-[10%]",
   },
   "scroll-wheel": {
-    x: 53,
-    y: 35,
+    x: 55,
+    y: 33,
     label: "Scroll wheel",
-    card: "left-[64%] top-[34%]",
-    line: "left-[54%] top-[35%] h-[2px] w-[10%]",
+    card: "left-[66%] top-[32%]",
+    line: "left-[56%] top-[33%] h-[2px] w-[10%]",
   },
   "thumb-button": {
-    x: 45,
-    y: 43,
+    x: 44,
+    y: 42,
     label: "Thumb button",
-    card: "left-[13%] top-[40%]",
-    line: "left-[29%] top-[43%] h-[2px] w-[15%]",
+    card: "left-[12%] top-[39%]",
+    line: "left-[28%] top-[42%] h-[2px] w-[15%]",
   },
   "gesture-button": {
-    x: 55,
-    y: 46,
+    x: 57,
+    y: 45,
     label: "Gesture button",
-    card: "left-[72%] top-[45%]",
-    line: "left-[56%] top-[46%] h-[2px] w-[16%]",
+    card: "left-[74%] top-[44%]",
+    line: "left-[58%] top-[45%] h-[2px] w-[16%]",
   },
   "side-scroll": {
     x: 48,
@@ -65,8 +65,8 @@ export function MouseVisualization({ zones, selectedZoneId, onSelectZone }: Mous
         <div
           className="stage-rise absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
           style={{
-            width: "clamp(320px, 46vw, 560px)",
-            height: "clamp(430px, 66vh, 680px)",
+            width: "clamp(700px, 50vw, 1620px)",
+            height: "clamp(900px, 72vh, 1760px)",
           }}
         >
           <Image
@@ -120,8 +120,8 @@ export function MouseVisualization({ zones, selectedZoneId, onSelectZone }: Mous
                 {point.label}
               </button>
               {zone.id === "gesture-button" ? (
-                <p className="pointer-events-none absolute left-[72%] top-[52%] z-30 font-mono text-[10px] text-accent">
-                    **Discover a new feature
+                <p className="pointer-events-none absolute left-[75%] top-[52%] z-30 font-mono text-[10px] text-accent">
+                    *Discover a new feature
                 </p>
               ) : null}
             </div>
