@@ -15,23 +15,23 @@ interface TopBarProps {
 
 export function TopBar({ title, battery, connection, profile, onProfileChange }: TopBarProps) {
   return (
-    <header className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/80 px-4 py-3">
+    <header className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/80 px-4 py-3">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight text-zinc-50">{title}</h1>
-        <div className="mt-1 flex items-center gap-3 text-xs text-zinc-400">
+        <h1 className="text-lg font-semibold tracking-tight text-zinc-50">{title}</h1>
+        <div className="mt-1 flex items-center gap-2 text-[11px] text-zinc-400">
           {typeof battery === "number" ? (
-            <span className="flex items-center gap-1">
-              <BatteryFull className="h-3.5 w-3.5 text-emerald-400" />
+            <span className="flex items-center gap-1 rounded-full border border-zinc-700 bg-zinc-800 px-2 py-0.5">
+              <BatteryFull className="h-3 w-3 text-emerald-400" />
               {battery}%
             </span>
           ) : null}
-          <span className="flex items-center gap-1">
-            <Signal className="h-3.5 w-3.5 text-emerald-400" />
+          <span className="flex items-center gap-1 rounded-full border border-zinc-700 bg-zinc-800 px-2 py-0.5">
+            <Signal className="h-3 w-3 text-emerald-400" />
             {connection}
           </span>
         </div>
       </div>
-      <div className="w-full max-w-[220px]">
+      <div className="w-full max-w-[250px]">
         <DropdownSelect
           label="Profile"
           options={profileOptions}

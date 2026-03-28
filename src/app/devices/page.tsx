@@ -1,85 +1,153 @@
 "use client";
 
-import { Keyboard, Mouse, Plug, Sparkles } from "lucide-react";
+import {
+  BatteryFull,
+  Bluetooth,
+  Bot,
+  ChevronRight,
+  CircleDot,
+  Cog,
+  Plus,
+  RotateCcw,
+  Sparkles,
+  UserRound,
+  X,
+} from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
 
-import { TopBar } from "@/components/layout/TopBar";
-import { DeviceCard } from "@/components/layout/DeviceCard";
-import { devices, profileOptions } from "@/data/mockData";
-
-function LargeDeviceIcon({ kind }: { kind: "mouse" | "keyboard" | "receiver" }) {
-  if (kind === "mouse") return <Mouse className="h-10 w-10" />;
-  if (kind === "keyboard") return <Keyboard className="h-10 w-10" />;
-  return <Plug className="h-10 w-10" />;
-}
+import { devices } from "@/data/mockData";
 
 export default function DevicesPage() {
-  const [profile, setProfile] = useState(profileOptions[0]);
-
-  const featuredDevice = useMemo(() => devices[0], []);
+  const featuredDevice = devices[0];
 
   return (
-    <div className="flex h-full flex-col gap-4 overflow-hidden">
-      <TopBar
-        title="Devices"
-        battery={featuredDevice.battery}
-        connection={featuredDevice.connection}
-        profile={profile}
-        onProfileChange={setProfile}
-      />
+    <div className="screen-enter flex h-full flex-col overflow-hidden px-5 pb-6 pt-4 sm:px-7">
+      <header className="flex items-center justify-between">
+        <h1 className="font-mono text-[34px] font-semibold tracking-tight text-zinc-50">Good Afternoon</h1>
 
-      <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[1.5fr_0.9fr]">
-        <section className="min-h-0 overflow-auto rounded-3xl border border-zinc-800 bg-zinc-900/50 p-5">
-          <div className="mb-5 flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-zinc-100">Connected Devices</h2>
-              <p className="text-sm text-zinc-500">Manage all devices in your Logi workspace.</p>
-            </div>
-            <Sparkles className="h-5 w-5 text-blue-300" />
+        <div className="flex items-center gap-5 text-zinc-100">
+          <button
+            type="button"
+            className="flex items-center gap-2 text-[18px] font-medium tracking-wide transition hover:text-accent"
+          >
+            <Plus className="h-4 w-4" strokeWidth={2.25} />
+            <span className="font-mono text-[18px]">ADD DEVICE</span>
+          </button>
+
+          <span className="h-9 w-px bg-white/20" />
+
+          <Link
+            href="/flo"
+            transitionTypes={["screen-shift"]}
+            className="flex items-center gap-2 text-[18px] font-medium tracking-wide transition hover:text-accent"
+          >
+            <Bot className="h-4 w-4" strokeWidth={2.25} />
+            <span className="font-mono text-[18px]">FLO</span>
+          </Link>
+
+          <span className="h-9 w-px bg-white/20" />
+
+          <div className="flex items-center gap-5">
+            <Link href="/devices" transitionTypes={["screen-shift"]} className="transition hover:text-accent">
+              <RotateCcw className="h-5 w-5" />
+            </Link>
+            <Link href="/device/mouse" transitionTypes={["screen-shift"]} className="relative transition hover:text-accent">
+              <Sparkles className="h-5 w-5" />
+              <span className="dot-pulse absolute -right-1 -top-1 h-2 w-2 rounded-full bg-accent" />
+            </Link>
+            <Link href="/device/keyboard" transitionTypes={["screen-shift"]} className="transition hover:text-accent">
+              <CircleDot className="h-5 w-5" />
+            </Link>
           </div>
 
-          <div className="space-y-3">
-            {devices.map((device) => (
-              <DeviceCard key={device.id} device={device} selected={device.id === featuredDevice.id} />
-            ))}
-          </div>
+          <span className="h-9 w-px bg-white/20" />
 
-          <div className="mt-6 rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 to-zinc-950 p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">Featured Device</p>
-            <div className="mt-3 flex items-center gap-4">
-              <div className="rounded-2xl border border-blue-500/50 bg-blue-500/15 p-4 text-blue-100">
-                <LargeDeviceIcon kind={featuredDevice.kind} />
+          <div className="flex items-center gap-5">
+            <button type="button" className="transition hover:text-accent" aria-label="Account">
+              <UserRound className="h-5 w-5" />
+            </button>
+            <Link href="/settings" transitionTypes={["screen-shift"]} className="transition hover:text-accent" aria-label="Settings">
+              <Cog className="h-5 w-5" />
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 pt-5 lg:grid-cols-[minmax(0,500px)_minmax(0,500px)] lg:justify-center">
+        <section className="relative min-h-90 w-full overflow-hidden rounded-3xl bg-[#111317]">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_36%_34%,rgba(31,35,42,0.9),transparent_42%)]" />
+
+          <div className="stage-rise relative flex h-full items-center justify-center">
+            <Link
+              href={featuredDevice.path}
+              transitionTypes={["open-device"]}
+              className="group relative flex flex-col items-center"
+            >
+              <div
+                className="float-pulse relative transition duration-500 group-hover:scale-[1.02]"
+                style={{
+                  width: "clamp(250px, 30vw, 380px)",
+                  height: "clamp(330px, 48vh, 500px)",
+                }}
+              >
+                <Image
+                  src="/MX-4.png"
+                  alt="MX Master 4 mouse"
+                  fill
+                  priority
+                  className="object-contain drop-shadow-[0_26px_52px_rgba(0,0,0,0.55)]"
+                  sizes="(max-width: 1200px) 36vw, 30vw"
+                />
               </div>
-              <div>
-                <p className="text-lg font-semibold text-zinc-100">{featuredDevice.name}</p>
-                <p className="text-sm text-zinc-500">Battery {featuredDevice.battery}% • {featuredDevice.connection}</p>
-                <Link
-                  href={featuredDevice.path}
-                  className="mt-3 inline-flex rounded-xl border border-blue-500/50 bg-blue-500/20 px-3 py-2 text-sm font-medium text-blue-100 transition hover:bg-blue-500/30"
-                >
-                  Open Configuration
-                </Link>
+
+              <div className="mt-4 inline-flex items-center gap-3 rounded-md border border-white/15 bg-[#050608] px-4 py-2.5 shadow-[0_8px_20px_rgba(0,0,0,0.4)]">
+                <BatteryFull className="h-4 w-4 text-lime-400" strokeWidth={2.2} />
+                <Bluetooth className="h-4 w-4 text-zinc-100" strokeWidth={2.2} />
               </div>
-            </div>
+            </Link>
           </div>
         </section>
 
-        <aside className="min-h-0 overflow-auto rounded-3xl border border-zinc-800 bg-zinc-950/85 p-5">
-          <h3 className="text-sm uppercase tracking-[0.18em] text-zinc-500">Workspace Summary</h3>
-          <div className="mt-4 space-y-3">
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
-              <p className="text-xs text-zinc-500">Profiles Active</p>
-              <p className="text-2xl font-semibold text-blue-200">3</p>
+        <aside className="flex min-h-90 w-full items-center justify-center rounded-3xl bg-[#111317] p-5">
+          <div className="w-full max-w-82 text-center">
+            <p className="font-mono text-[12px] font-semibold tracking-[0.06em] text-zinc-600">UPGRADE YOUR DEVICE EXPERIENCE</p>
+
+            <div className="mt-4 overflow-hidden rounded-xs bg-black p-4">
+              <p className="font-mono text-left text-[14px] leading-[1.16] font-semibold text-zinc-100">
+                DISCOVER A NEW SENSE OF  FOCUS
+                <br />
+                WITH FLO
+              </p>
+
+              <div className="relative mx-auto mt-4 h-45 w-36">
+                <Image
+                  src="/MX-4.png"
+                  alt="MX Master 4 promo"
+                  fill
+                  className="object-contain"
+                  sizes="144px"
+                />
+              </div>
             </div>
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
-              <p className="text-xs text-zinc-500">Smart Actions</p>
-              <p className="text-2xl font-semibold text-blue-200">12</p>
+
+            <div className="mt-5 flex items-center justify-center gap-3">
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-[#060709] px-6 py-2 font-mono text-[14px] font-medium tracking-wide text-zinc-100 transition hover:border-accent hover:text-accent"
+              >
+                DISCOVER
+                <ChevronRight className="h-4 w-4 text-accent" />
+              </button>
+              <button
+                type="button"
+                className="grid h-7 w-7 place-items-center rounded-full border border-white/15 bg-black/30 text-zinc-600 transition hover:text-zinc-400"
+                aria-label="Close"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             </div>
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
-              <p className="text-xs text-zinc-500">Devices Online</p>
-              <p className="text-2xl font-semibold text-blue-200">{devices.length}</p>
-            </div>
+
           </div>
         </aside>
       </div>

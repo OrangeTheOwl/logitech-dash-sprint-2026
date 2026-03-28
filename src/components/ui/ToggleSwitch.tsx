@@ -11,15 +11,17 @@ export function ToggleSwitch({ label, enabled, onChange }: ToggleSwitchProps) {
     <button
       type="button"
       onClick={() => onChange(!enabled)}
-      className="flex w-full items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 transition hover:border-blue-500/50 hover:bg-zinc-800"
+      className="flex h-12 w-full items-center justify-between rounded-[10px] border border-white/12 bg-black/30 px-4 py-2 font-mono text-[16px] text-zinc-100 transition hover:border-white/25"
     >
       <span>{label}</span>
       <span
-        className={`relative h-5 w-10 rounded-full transition ${enabled ? "bg-blue-500" : "bg-zinc-700"}`}
+        className={`relative h-5 w-9 rounded-full border transition ${
+          enabled ? "border-accent/60 bg-accent" : "border-zinc-600 bg-zinc-700"
+        }`}
       >
         <span
-          className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition ${
-            enabled ? "left-5" : "left-0.5"
+          className={`absolute top-0.5 h-3.5 w-3.5 rounded-full bg-white transition ${
+            enabled ? "left-4.5" : "left-0.5"
           }`}
         />
       </span>

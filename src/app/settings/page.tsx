@@ -1,8 +1,9 @@
 "use client";
 
+import { ArrowLeft, Bell, Languages, SlidersHorizontal } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
-import { TopBar } from "@/components/layout/TopBar";
 import { DropdownSelect } from "@/components/ui/DropdownSelect";
 import { SliderControl } from "@/components/ui/SliderControl";
 import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
@@ -19,20 +20,21 @@ export default function SettingsPage() {
   const [pollRate, setPollRate] = useState(70);
 
   return (
-    <div className="flex h-full flex-col gap-4 overflow-hidden">
-      <TopBar
-        title="App Settings"
-        connection="Workspace Online"
-        profile={profile}
-        onProfileChange={setProfile}
-      />
+    <div className="screen-enter flex h-full flex-col overflow-hidden px-6 pb-7 pt-5 sm:px-8">
+      <header className="flex items-center gap-3">
+        <Link href="/devices" transitionTypes={["screen-shift"]} className="rounded-full p-1 text-zinc-300 transition hover:text-white">
+          <ArrowLeft className="h-7 w-7" />
+        </Link>
+        <h1 className="font-mono text-[44px] font-semibold tracking-tight text-zinc-50">Settings</h1>
+      </header>
 
-      <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[1.35fr_1fr]">
-        <section className="min-h-0 overflow-auto rounded-3xl border border-zinc-800 bg-zinc-900/55 p-5">
-          <h2 className="text-lg font-semibold text-zinc-100">Preferences</h2>
-          <p className="mt-1 text-sm text-zinc-500">Customize visual behavior and app-level settings.</p>
+      <div className="grid min-h-0 flex-1 gap-7 pt-7 lg:grid-cols-[1.1fr_0.8fr]">
+        <section className="min-h-0 overflow-auto rounded-2xl border border-white/10 bg-[#111419] p-6">
+          <h2 className="font-mono text-[30px] font-semibold tracking-tight text-zinc-100">Preferences</h2>
+          <p className="mt-1 font-mono text-[15px] text-zinc-500">Customize your Options+ desktop experience.</p>
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-7 space-y-5">
+            <DropdownSelect label="Profile" options={profileOptions} value={profile} onChange={setProfile} />
             <DropdownSelect label="Language" options={languages} value={language} onChange={setLanguage} />
             <ToggleSwitch label="Automatic Updates" enabled={autoUpdate} onChange={setAutoUpdate} />
             <ToggleSwitch label="Desktop Notifications" enabled={notify} onChange={setNotify} />
@@ -41,20 +43,32 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <aside className="min-h-0 overflow-auto rounded-3xl border border-zinc-800 bg-zinc-950/85 p-5">
-          <h3 className="text-sm uppercase tracking-[0.18em] text-zinc-500">System Status</h3>
+        <aside className="min-h-0 overflow-auto rounded-2xl border border-white/10 bg-[#111419] p-6">
+          <h3 className="font-mono text-[16px] tracking-[0.12em] text-zinc-500">SYSTEM STATUS</h3>
           <div className="mt-4 space-y-3">
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
-              <p className="text-xs text-zinc-500">App Version</p>
-              <p className="text-lg font-semibold text-zinc-100">v0.1 Pixel Clone</p>
+            <div className="rounded-xl border border-white/10 bg-black/30 p-4">
+              <p className="text-[12px] uppercase tracking-[0.12em] text-zinc-500">App Version</p>
+              <p className="mt-1 font-mono text-[26px] font-semibold text-zinc-100">v0.1 Clone</p>
             </div>
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
-              <p className="text-xs text-zinc-500">Cloud Sync</p>
-              <p className="text-lg font-semibold text-emerald-300">Connected</p>
+            <div className="rounded-xl border border-white/10 bg-black/30 p-4">
+              <p className="text-[12px] uppercase tracking-[0.12em] text-zinc-500">Cloud Sync</p>
+              <p className="mt-1 font-mono text-[26px] font-semibold text-accent">Connected</p>
             </div>
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
-              <p className="text-xs text-zinc-500">Device Rules</p>
-              <p className="text-lg font-semibold text-blue-200">24 active</p>
+            <div className="rounded-xl border border-white/10 bg-black/30 p-4">
+              <p className="text-[12px] uppercase tracking-[0.12em] text-zinc-500">Device Rules</p>
+              <p className="mt-1 font-mono text-[26px] font-semibold text-zinc-100">24 active</p>
+            </div>
+          </div>
+
+          <div className="mt-8 grid grid-cols-3 gap-3 text-zinc-400">
+            <div className="grid place-items-center rounded-[10px] border border-white/10 bg-black/25 p-4">
+              <Languages className="h-5 w-5" />
+            </div>
+            <div className="grid place-items-center rounded-[10px] border border-white/10 bg-black/25 p-4">
+              <Bell className="h-5 w-5" />
+            </div>
+            <div className="grid place-items-center rounded-[10px] border border-white/10 bg-black/25 p-4">
+              <SlidersHorizontal className="h-5 w-5" />
             </div>
           </div>
         </aside>

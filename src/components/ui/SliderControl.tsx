@@ -10,10 +10,10 @@ interface SliderControlProps {
 
 export function SliderControl({ label, value, onChange, min = 0, max = 100 }: SliderControlProps) {
   return (
-    <div className="space-y-2 rounded-xl border border-zinc-800 bg-zinc-900/80 px-3 py-3">
-      <div className="flex items-center justify-between text-sm text-zinc-200">
+    <div className="space-y-2 rounded-[10px] border border-white/12 bg-black/30 px-4 py-4">
+      <div className="flex items-center justify-between font-mono text-[16px] text-zinc-100">
         <span>{label}</span>
-        <span className="font-medium text-blue-300">{value}%</span>
+        <span className="font-semibold text-accent">{value}%</span>
       </div>
       <input
         type="range"
@@ -21,8 +21,12 @@ export function SliderControl({ label, value, onChange, min = 0, max = 100 }: Sl
         max={max}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-zinc-700 accent-blue-500"
+        className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-zinc-700 accent-accent"
       />
+      <div className="flex items-center justify-between font-mono text-[11px] text-zinc-500">
+        <span>{min}</span>
+        <span>{max}</span>
+      </div>
     </div>
   );
 }

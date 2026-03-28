@@ -8,12 +8,12 @@ interface KeyboardVisualizationProps {
   onSelectZone: (zoneId: string) => void;
 }
 
-const keyboardHotspots: Record<string, string> = {
-  "f-row": "left-[8%] top-[13%] h-[14%] w-[84%]",
-  "num-pad": "left-[78%] top-[34%] h-[48%] w-[14%]",
-  "media-keys": "left-[8%] top-[30%] h-[12%] w-[30%]",
-  "arrow-cluster": "left-[60%] top-[62%] h-[22%] w-[14%]",
-  "smart-illumination": "left-[8%] top-[84%] h-[9%] w-[84%]",
+const keyboardHotspots: Record<string, { shape: string; label: string }> = {
+  "f-row": { shape: "left-[8%] top-[14%] h-[12%] w-[84%]", label: "Function row" },
+  "num-pad": { shape: "left-[78%] top-[34%] h-[48%] w-[14%]", label: "Numpad" },
+  "media-keys": { shape: "left-[8%] top-[30%] h-[12%] w-[30%]", label: "Media" },
+  "arrow-cluster": { shape: "left-[60%] top-[62%] h-[22%] w-[14%]", label: "Arrows" },
+  "smart-illumination": { shape: "left-[8%] top-[84%] h-[9%] w-[84%]", label: "Backlight" },
 };
 
 export function KeyboardVisualization({
@@ -22,30 +22,34 @@ export function KeyboardVisualization({
   onSelectZone,
 }: KeyboardVisualizationProps) {
   return (
-    <section className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-2xl shadow-black/25">
-      <p className="mb-4 text-xs uppercase tracking-[0.2em] text-zinc-500">Interactive Device Map</p>
-      <div className="relative mx-auto aspect-[16/7] w-full rounded-3xl border border-zinc-700 bg-gradient-to-b from-zinc-800 via-zinc-900 to-zinc-950 p-4 shadow-inner shadow-black/40">
-        <div className="grid h-full grid-cols-12 gap-1 rounded-2xl bg-zinc-800/35 p-3">
-          {Array.from({ length: 72 }).map((_, index) => (
-            <div key={index} className="rounded-md border border-zinc-700/70 bg-zinc-900/60" />
-          ))}
+    <section className="relative h-full rounded-xl border border-white/8 bg-[radial-gradient(circle_at_55%_38%,rgba(255,255,255,0.05),transparent_50%)] p-3">
+      <div className="relative mx-auto h-full max-w-205">
+        <div className="stage-rise absolute left-1/2 top-1/2 h-[50%] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-white/12 bg-[linear-gradient(180deg,#2b3039_0%,#1f242c_35%,#151921_100%)] p-3 shadow-[inset_18px_20px_30px_rgba(255,255,255,0.04),inset_-18px_-20px_30px_rgba(0,0,0,0.55),0_26px_60px_rgba(0,0,0,0.5)]">
+          <div className="grid h-full grid-cols-12 gap-1 rounded-2xl border border-white/6 bg-black/25 p-2">
+            {Array.from({ length: 84 }).map((_, index) => (
+              <div key={index} className="rounded-md border border-white/8 bg-[#141922]" />
+            ))}
+          </div>
         </div>
 
         {zones.map((zone) => {
           const selected = selectedZoneId === zone.id;
-          const hotspotClass = keyboardHotspots[zone.id] ?? "left-[45%] top-[45%] h-[10%] w-[10%]";
+          const hotspot = keyboardHotspots[zone.id];
+          if (!hotspot) {
+            return null;
+          }
           return (
             <button
               key={zone.id}
               type="button"
               onClick={() => onSelectZone(zone.id)}
-              className={`absolute rounded-xl border transition ${hotspotClass} ${
+              className={`absolute rounded-[10px] border transition ${hotspot.shape} ${
                 selected
-                  ? "border-blue-400 bg-blue-500/30 shadow-lg shadow-blue-500/20"
-                  : "border-zinc-600/70 bg-zinc-700/20 hover:border-blue-500/70 hover:bg-blue-500/20"
+                  ? "border-accent bg-(--accent-soft) shadow-[0_0_0_1px_rgba(28,230,215,0.2)]"
+                  : "border-white/25 bg-black/20 hover:border-white/45"
               }`}
             >
-              <span className="sr-only">{zone.name}</span>
+              <span className="absolute left-2 top-1 font-mono text-[10px] text-white/85">{hotspot.label}</span>
             </button>
           );
         })}
