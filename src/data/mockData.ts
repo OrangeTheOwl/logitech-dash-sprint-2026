@@ -32,11 +32,13 @@ export const devices: DeviceItem[] = [
 export const profileOptions = ["Default", "Design", "Editing", "Focus"];
 
 export const actionOptions = [
-  "Keystroke",
-  "Gesture",
-  "Smart Action",
-  "Launch App",
-  "Media Control",
+  "Volume up",
+  "Volume down",
+  "Mute",
+  "Copy",
+  "Paste",
+  "Play/Pause",
+  "FLO",
   "None",
 ];
 

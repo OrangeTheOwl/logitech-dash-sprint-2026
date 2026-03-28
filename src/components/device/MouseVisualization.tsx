@@ -98,6 +98,16 @@ export function MouseVisualization({ zones, selectedZoneId, onSelectZone }: Mous
                 }`}
                 aria-label={zone.name}
               />
+              {zone.id === "gesture-button" ? (
+                <span
+                  className="dot-pulse absolute z-40 h-2 w-2 rounded-full bg-accent"
+                  style={{
+                    left: `${point.x + 33.5}%`,
+                    top: `${point.y - 2}%`,
+                    transform: "translate(-50%, -50%)",
+                  }}
+                />
+              ) : null}
               <button
                 type="button"
                 onClick={() => onSelectZone(zone.id)}
@@ -109,6 +119,11 @@ export function MouseVisualization({ zones, selectedZoneId, onSelectZone }: Mous
               >
                 {point.label}
               </button>
+              {zone.id === "gesture-button" ? (
+                <p className="pointer-events-none absolute left-[72%] top-[52%] z-30 font-mono text-[10px] text-accent">
+                    **Discover a new feature
+                </p>
+              ) : null}
             </div>
           );
         })}

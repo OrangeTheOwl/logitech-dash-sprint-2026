@@ -1,16 +1,20 @@
 "use client";
 
-import { ArrowLeft, BatteryFull, Bluetooth, Cog, Grid2x2, Mouse, Plus, Sparkles } from "lucide-react";
+import { ArrowLeft, BatteryFull, Bluetooth, Check, Cog, Grid2x2, Mouse, Plus, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 import { MouseVisualization } from "@/components/device/MouseVisualization";
-import { devices, mouseZones } from "@/data/mockData";
+import { actionOptions, devices, mouseZones } from "@/data/mockData";
 
 const mouseDevice = devices.find((device) => device.kind === "mouse");
 
 export default function MousePage() {
   const [selectedZoneId, setSelectedZoneId] = useState("thumb-button");
+  const [selectedAction, setSelectedAction] = useState("Gesture");
+
+  const isGestureButtonSelected = selectedZoneId === "gesture-button";
+  const gestureActionOptions = Array.from(new Set([...actionOptions, "FLO"]));
 
   return (
     <div className="screen-enter flex h-full flex-col overflow-hidden px-5 pb-6 pt-4 sm:px-7">
@@ -83,14 +87,58 @@ export default function MousePage() {
           </div>
         </aside>
 
-        <section className="min-h-0 overflow-auto p-3">
-          <div className="min-h-120">
+        <section className="relative min-h-0 overflow-auto p-3">
+          <div className={`min-h-120 transition-all duration-300 ${isGestureButtonSelected ? "pr-80" : ""}`}>
             <MouseVisualization
               zones={mouseZones}
               selectedZoneId={selectedZoneId}
               onSelectZone={setSelectedZoneId}
             />
           </div>
+
+          {isGestureButtonSelected ? (
+            <aside className="absolute right-3 top-3 z-40 h-[calc(100%-1.5rem)] w-75 rounded-xl border border-white/12 bg-[#0b0e12]/95 p-4 shadow-[0_20px_45px_rgba(0,0,0,0.45)] backdrop-blur-sm">
+              <div className="mb-4 flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-mono text-[12px] uppercase tracking-[0.08em] text-zinc-500">Gesture Button</p>
+                  <h3 className="mt-1 font-mono text-[18px] font-semibold text-zinc-100">Assign Action</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedZoneId("thumb-button")}
+                  className="grid h-7 w-7 place-items-center rounded-full border border-white/15 text-zinc-400 transition hover:text-zinc-200"
+                  aria-label="Close action menu"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+
+              <div className="space-y-2 overflow-y-auto pr-1">
+                {gestureActionOptions.map((option) => {
+                  const isSelected = selectedAction === option;
+                  const isFloOption = option === "FLO";
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setSelectedAction(option)}
+                      className={`flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-left font-mono text-[14px] transition ${
+                        isSelected
+                          ? "border-accent/60 bg-accent/15 text-zinc-100"
+                            : "border-white/10 bg-white/2 text-zinc-300 hover:border-white/25"
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span>{option}</span>
+                        {isFloOption ? <span className="dot-pulse h-2 w-2 rounded-full bg-accent" /> : null}
+                      </span>
+                      {isSelected ? <Check className="h-4 w-4 text-accent" /> : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </aside>
+          ) : null}
         </section>
       </div>
     </div>
