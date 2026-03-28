@@ -193,6 +193,25 @@ function SmileyStartupAnimation() {
   );
 }
 
+function SectionInfoWindow({
+  title,
+  description,
+  className = "",
+}: {
+  title: string;
+  description: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`pointer-events-none absolute right-3 top-3 z-20 w-72 translate-y-2 rounded-xl border border-accent/35 bg-[#0d1115]/95 p-3 opacity-0 shadow-[0_14px_40px_rgba(0,0,0,0.55)] backdrop-blur-sm transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 ${className}`}
+    >
+      <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-zinc-500">{title}</p>
+      <p className="mt-1 font-mono text-[12px] leading-relaxed text-zinc-300">{description}</p>
+    </div>
+  );
+}
+
 function AgentStatusCard({ focusScore, sessionMinutes }: { focusScore: number; sessionMinutes: number }) {
   const state =
     focusScore >= 86
@@ -209,11 +228,16 @@ function AgentStatusCard({ focusScore, sessionMinutes }: { focusScore: number; s
   const stateOptions = ["🟢 Deep Focus", "🟡 Focused", "🟠 Distracted", "🔴 Lost Focus", "🔵 Fatigued"];
 
   return (
-    <section className="rounded-2xl bg-[#111317] p-5">
+    <section className="group relative overflow-visible rounded-2xl bg-[#111317] p-5">
       <p className="flex items-center gap-1.5 font-mono text-[12px] uppercase tracking-[0.08em] text-zinc-500">
         <Star className="h-3.5 w-3.5" />
         Today's Status
       </p>
+      <SectionInfoWindow
+        title="Section Guide"
+        description="Quick summary of current performance state. Focus score reflects overall quality, state indicates behavior pattern, and flow mode shows whether sustained deep work is active."
+        className="top-10"
+      />
       <div className="mt-4 grid gap-4 md:grid-cols-[1.7fr_1fr_1fr_1fr]">
         <div className="rounded-xl bg-black/25 p-4">
           <p className="flex items-center gap-1.5 font-mono text-[12px] text-zinc-400">
@@ -295,11 +319,16 @@ function AgentReasoning({ signals }: { signals: SignalState }) {
   ];
 
   return (
-    <section className="rounded-2xl bg-[#111317] p-5">
+    <section className="group relative overflow-visible rounded-2xl bg-[#111317] p-5">
       <h2 className="flex items-center gap-2 font-mono text-[14px] uppercase tracking-[0.08em] text-zinc-400">
         <Brain className="h-4 w-4" />
         Agent Analysis
       </h2>
+      <SectionInfoWindow
+        title="Section Guide"
+        description="Explains why FLO believes your focus is stable or drifting. Confidence is computed from live behavior signals and the detected pattern list highlights what changed recently."
+        className="top-10"
+      />
       <div className="mt-4 rounded-[10px] border border-white/12 bg-black/30 px-4 py-3">
         <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-zinc-500">Current Assessment</p>
         <p className="mt-1 font-mono text-[14px] text-zinc-100">
@@ -347,7 +376,7 @@ function FocusTimeline({ points }: { points: TimelinePoint[] }) {
   };
 
   return (
-    <section className="rounded-2xl bg-[#111317] p-5">
+    <section className="group relative overflow-visible rounded-2xl bg-[#111317] p-5">
       <div className="flex items-start justify-between gap-3">
         <h2 className="flex items-center gap-2 font-mono text-[14px] uppercase tracking-[0.08em] text-zinc-400">
           <TrendingUp className="h-4 w-4" />
@@ -357,6 +386,11 @@ function FocusTimeline({ points }: { points: TimelinePoint[] }) {
           {bestDay ? `Best: ${bestDay.day} (${bestDay.score}%)` : "Best: --"}
         </span>
       </div>
+      <SectionInfoWindow
+        title="Section Guide"
+        description="Day-by-day focus history. Each horizontal highlight is a productive block inside working hours; expanding a day shows exact time ranges and total productive time."
+        className="top-12"
+      />
 
       <p className="mt-2 font-mono text-[12px] text-zinc-500">Daily focus history on a 24h rail with productive windows in working hours (09:00-17:00).</p>
 
@@ -457,11 +491,16 @@ function InterventionControls({
   ];
 
   return (
-    <section className="rounded-2xl bg-[#111317] p-5">
+    <section className="group relative overflow-visible rounded-2xl bg-[#111317] p-5">
       <h2 className="flex items-center gap-2 font-mono text-[14px] uppercase tracking-[0.08em] text-zinc-400">
         <SlidersHorizontal className="h-4 w-4" />
         Intervention Settings
       </h2>
+      <SectionInfoWindow
+        title="Section Guide"
+        description="Controls how strongly FLO nudges behavior. Toggle specific interventions on or off, then tune global strength to shift between gentle guidance and stronger correction."
+        className="top-10"
+      />
       <div className="mt-4 space-y-3">
         {toggleOrder.map((item) => (
           <button
@@ -555,7 +594,7 @@ function ActivityFeed({ items }: { items: FeedItem[] }) {
   };
 
   return (
-    <section className="rounded-2xl bg-[#111317] p-5">
+    <section className="group relative overflow-visible rounded-2xl bg-[#111317] p-5">
       <div className="flex items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 font-mono text-[14px] uppercase tracking-[0.08em] text-zinc-400">
           <History className="h-4 w-4" />
@@ -565,6 +604,11 @@ function ActivityFeed({ items }: { items: FeedItem[] }) {
           {items.length} events
         </span>
       </div>
+      <SectionInfoWindow
+        title="Section Guide"
+        description="Chronological log of detections, interventions, recovery signals, and simulation actions. Use it to understand what FLO observed and how it responded over time."
+        className="top-10"
+      />
 
       <p className="mt-2 font-mono text-[12px] text-zinc-500">Latest decisions, detections, and interventions.</p>
 
@@ -606,11 +650,16 @@ function SimulationControls({
   onScenario: (scenario: "distraction" | "deep-focus" | "fatigue" | "tab-switch") => void;
 }) {
   return (
-    <section className="rounded-2xl bg-[#111317] p-5">
+    <section className="group relative overflow-visible rounded-2xl bg-[#111317] p-5">
       <h2 className="flex items-center gap-2 font-mono text-[14px] uppercase tracking-[0.08em] text-zinc-400">
         <Gauge className="h-4 w-4" />
         Simulation Controls
       </h2>
+      <SectionInfoWindow
+        title="Section Guide"
+        description="Injects test scenarios to preview FLO reactions without waiting for real behavior changes. Helpful for checking intervention logic and dashboard feedback states."
+        className="top-10"
+      />
       <div className="mt-4 flex flex-wrap gap-2">
         <button
           type="button"
