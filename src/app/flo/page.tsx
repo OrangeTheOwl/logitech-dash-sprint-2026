@@ -46,18 +46,31 @@ interface TimelinePoint {
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 function buildRandomDailyWindows(): ProductiveWindow[] {
+  return buildSeededDailyWindows(1);
+}
+
+function createSeededRandom(seed: number) {
+  let state = seed >>> 0;
+  return () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
+function buildSeededDailyWindows(seed: number): ProductiveWindow[] {
+  const rand = createSeededRandom(seed);
   const minDuration = 20 / 60;
   const maxDuration = 59 / 60;
-  const slotCount = 2 + Math.floor(Math.random() * 4);
+  const slotCount = 2 + Math.floor(rand() * 4);
 
   const durations = Array.from(
     { length: slotCount },
-    () => minDuration + Math.random() * (maxDuration - minDuration),
+    () => minDuration + rand() * (maxDuration - minDuration),
   );
 
   const usedHours = durations.reduce((sum, d) => sum + d, 0);
   const freeHours = Math.max(0, 8 - usedHours);
-  const gapWeights = Array.from({ length: slotCount + 1 }, () => 0.2 + Math.random() * 1.8);
+  const gapWeights = Array.from({ length: slotCount + 1 }, () => 0.2 + rand() * 1.8);
   const gapWeightTotal = gapWeights.reduce((sum, w) => sum + w, 0);
   const gaps = gapWeights.map((w) => (w / gapWeightTotal) * freeHours);
 
@@ -76,13 +89,13 @@ function buildRandomDailyWindows(): ProductiveWindow[] {
 
 function generateFreshTimelineData(): TimelinePoint[] {
   return [
-    { id: "mon", day: "Monday", score: 82, productiveWindows: buildRandomDailyWindows() },
-    { id: "tue", day: "Tuesday", score: 74, productiveWindows: buildRandomDailyWindows() },
-    { id: "wed", day: "Wednesday", score: 69, productiveWindows: buildRandomDailyWindows() },
-    { id: "thu", day: "Thursday", score: 88, productiveWindows: buildRandomDailyWindows() },
-    { id: "fri", day: "Friday", score: 77, productiveWindows: buildRandomDailyWindows() },
-    { id: "sat", day: "Saturday", score: 72, productiveWindows: buildRandomDailyWindows() },
-    { id: "today", day: "Today", score: 84, productiveWindows: buildRandomDailyWindows() },
+    { id: "mon", day: "Monday", score: 82, productiveWindows: buildSeededDailyWindows(101) },
+    { id: "tue", day: "Tuesday", score: 74, productiveWindows: buildSeededDailyWindows(202) },
+    { id: "wed", day: "Wednesday", score: 69, productiveWindows: buildSeededDailyWindows(303) },
+    { id: "thu", day: "Thursday", score: 88, productiveWindows: buildSeededDailyWindows(404) },
+    { id: "fri", day: "Friday", score: 77, productiveWindows: buildSeededDailyWindows(505) },
+    { id: "sat", day: "Saturday", score: 72, productiveWindows: buildSeededDailyWindows(606) },
+    { id: "today", day: "Today", score: 84, productiveWindows: buildSeededDailyWindows(707) },
   ];
 }
 
@@ -326,7 +339,7 @@ function AgentReasoning({ signals }: { signals: SignalState }) {
       </h2>
       <SectionInfoWindow
         title="Section Guide"
-        description="Explains why FLO believes your focus is stable or drifting. Confidence is computed from live behavior signals and the detected pattern list highlights what changed recently."
+        description="Explains why DASH believes your focus is stable or drifting. Confidence is computed from live behavior signals and the detected pattern list highlights what changed recently."
         className="top-10"
       />
       <div className="mt-4 rounded-[10px] border border-white/12 bg-black/30 px-4 py-3">
@@ -498,7 +511,7 @@ function InterventionControls({
       </h2>
       <SectionInfoWindow
         title="Section Guide"
-        description="Controls how strongly FLO nudges behavior. Toggle specific interventions on or off, then tune global strength to shift between gentle guidance and stronger correction."
+        description="Controls how strongly DASH nudges behavior. Toggle specific interventions on or off, then tune global strength to shift between gentle guidance and stronger correction."
         className="top-10"
       />
       <div className="mt-4 space-y-3">
@@ -606,7 +619,7 @@ function ActivityFeed({ items }: { items: FeedItem[] }) {
       </div>
       <SectionInfoWindow
         title="Section Guide"
-        description="Chronological log of detections, interventions, recovery signals, and simulation actions. Use it to understand what FLO observed and how it responded over time."
+        description="Chronological log of detections, interventions, recovery signals, and simulation actions. Use it to understand what DASH observed and how it responded over time."
         className="top-10"
       />
 
@@ -631,7 +644,7 @@ function ActivityFeed({ items }: { items: FeedItem[] }) {
                     </span>
                     <span className="font-mono text-[11px] text-zinc-500">{item.time}</span>
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-600">FLO</span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-600">DASH</span>
                 </div>
 
                 <p className="mt-2 font-mono text-[13px] leading-relaxed text-zinc-200">{item.message}</p>
@@ -798,19 +811,12 @@ export default function FloPage() {
       if (shouldSlow && center) {
         const distance = Math.hypot(real.x - center.x, real.y - center.y);
         const proximity = 1 - clamp(distance / 340, 0, 1);
-        const earlyRamp = Math.pow(proximity, 1.7);
-        const steepRamp = Math.pow(proximity, 3.2);
-        sensitivity = clamp(0.38 - earlyRamp * 0.22 - steepRamp * 0.17, 0.0006, 0.45);
+        const gradualRamp = Math.pow(proximity, 1.9);
+        const fineRamp = Math.pow(proximity, 2.8);
 
-        // Start strong friction earlier, not only at the very center.
-        if (distance < 95) {
-          sensitivity = Math.min(sensitivity, 0.0035);
-        }
-
-        // Near the center, almost lock movement to simulate extreme friction.
-        if (distance < 55) {
-          sensitivity = 0.00025;
-        }
+        // Continuous slowdown curve: noticeably slower near center,
+        // but never close to a full stop.
+        sensitivity = clamp(0.38 - gradualRamp * 0.22 - fineRamp * 0.14, 0.07, 0.42);
       }
 
       const nextVirtual = shouldSlow
@@ -946,7 +952,7 @@ export default function FloPage() {
           >
             <p className="font-mono text-[11px] uppercase tracking-widest text-accent/85">TikTok Tab</p>
             <p className="mt-2 font-mono text-[13px] leading-relaxed text-zinc-100">
-              TikTok FYP is pulling attention. As your cursor moves toward this tab, FLO adds pointer friction and guides you back to task flow.
+              TikTok FYP is pulling attention. As your cursor moves toward this tab, DASH adds pointer friction and guides you back to task flow.
             </p>
             <div className="mt-3 rounded-lg border border-accent/35 bg-black/30 p-2 font-mono text-[11px] text-zinc-300">
               Losing focus: <span className={isInDistractionZone ? "text-accent" : "text-zinc-400"}>{isInDistractionZone ? "YES" : "NO"}</span>
@@ -978,7 +984,7 @@ export default function FloPage() {
             <Link href="/devices" transitionTypes={["screen-shift"]} className="rounded-full p-1 text-zinc-300 transition hover:text-white">
               <ArrowLeft className="h-7 w-7" />
             </Link>
-            <h1 className="font-mono text-[34px] font-semibold tracking-tight text-zinc-50">FLO</h1>
+            <h1 className="font-mono text-[34px] font-semibold tracking-tight text-zinc-50">DASH</h1>
           </header>
 
           <div ref={scrollContainerRef} className="flex-1 space-y-5 overflow-auto pr-1">

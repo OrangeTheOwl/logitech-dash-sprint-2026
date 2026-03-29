@@ -7,14 +7,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 const placeholderSections = [
-  "Context Capture",
-  "Distraction Friction Field",
-  "Adaptive Intervention Engine",
-  "Recovery Timeline Intelligence",
-  "Cross-Device Focus Memory",
-  "Intent Forecast Layer",
-  "Collaborative Focus Modes",
-  "Energy-Aware Break Timing",
+  "Capture Context",
+  "Distraction Detection",
+  "Context-Aware Search",
+  "Flow State Protection",
+  "Flow Break Guidance",
+  "Collaborative Agents (Team Mode)",
+  "Focus Rewards",
+  "Focus Statistics",
 ];
 
 const sectionCardMaxWidth = "30rem";
@@ -31,9 +31,9 @@ const sectionCardLayouts: Array<{ minHeight: string }> = [
   { minHeight: "17rem" },
 ];
 
-const sectionRowOffsets = [0, 0, 0, 0, 0, 0, 0, -200];
+const sectionRowOffsets = [0, 0, 0, 0, 0, 0, 0, 0];
 
-export default function DiscoverFloPage() {
+export default function DiscoverDashPage() {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const roadmapBlockRef = useRef<HTMLDivElement | null>(null);
   const roadmapPathRef = useRef<SVGPathElement | null>(null);
@@ -72,6 +72,8 @@ export default function DiscoverFloPage() {
     const extendedY = lastY + rowGap;
     const extendedY2 = extendedY + rowGap;
     const extendedY3 = extendedY2 + rowGap;
+    const extendedY4 = extendedY3 + rowGap;
+    const extendedY5 = extendedY4 + rowGap;
 
     if (endsAtRight) {
       // Continue one more lane down in the same serpentine style.
@@ -84,6 +86,14 @@ export default function DiscoverFloPage() {
 
       // Extend one more step down.
       path += ` A ${turnRadius} ${turnRadius} 0 0 1 ${rightX} ${extendedY3}`;
+      path += ` H ${leftX}`;
+
+      // Extend another full serpentine step down.
+      path += ` A ${turnRadius} ${turnRadius} 0 0 0 ${leftX} ${extendedY4}`;
+      path += ` H ${rightX}`;
+
+      // Final step and exit from the side where the line ends.
+      path += ` A ${turnRadius} ${turnRadius} 0 0 1 ${rightX} ${extendedY5}`;
       path += ` H ${leftX}`;
       path += ` H 40`;
     } else {
@@ -98,12 +108,20 @@ export default function DiscoverFloPage() {
       // Extend one more step down.
       path += ` A ${turnRadius} ${turnRadius} 0 0 0 ${leftX} ${extendedY3}`;
       path += ` H ${rightX}`;
+
+      // Extend another full serpentine step down.
+      path += ` A ${turnRadius} ${turnRadius} 0 0 1 ${rightX} ${extendedY4}`;
+      path += ` H ${leftX}`;
+
+      // Final step and exit from the side where the line ends.
+      path += ` A ${turnRadius} ${turnRadius} 0 0 0 ${leftX} ${extendedY5}`;
+      path += ` H ${rightX}`;
       path += ` H 960`;
     }
 
     return {
       roadmapPath: path,
-      roadmapHeight: extendedY3 + 220,
+      roadmapHeight: extendedY5 + 220,
     };
   }, []);
 
@@ -115,16 +133,27 @@ export default function DiscoverFloPage() {
 
     const updateProgress = () => {
       const roadmapBlock = roadmapBlockRef.current;
+      const scrollable = Math.max(1, el.scrollHeight - el.clientHeight);
+
+      // Ensure the path is fully complete when the scroll area reaches the bottom.
+      if (el.scrollTop >= scrollable - 1) {
+        setScrollProgress(1);
+        return;
+      }
+
       if (!roadmapBlock) {
-        const scrollable = Math.max(1, el.scrollHeight - el.clientHeight);
         const nextProgress = clamp(el.scrollTop / scrollable, 0, 1);
         setScrollProgress(nextProgress);
         return;
       }
 
+      // Keep the line feeling behind the scroll at first (0.7), then let it catch up near the end (0.9).
+      const nearBottomSwitchPoint = scrollable * 0.82;
+      const viewportLeadRatio = el.scrollTop >= nearBottomSwitchPoint ? 0.9 : 0.7;
+
       // Tie drawing progress to where the roadmap sits in the viewport,
       // so the line reaches the bottom as the viewer approaches the lower screen edge.
-      const viewportLead = el.clientHeight * 0.65;
+      const viewportLead = el.clientHeight * viewportLeadRatio;
       const viewportTrackPoint = el.scrollTop + viewportLead;
       const blockStart = roadmapBlock.offsetTop;
       const blockSpan = Math.max(1, roadmapBlock.offsetHeight);
@@ -154,18 +183,16 @@ export default function DiscoverFloPage() {
         <Link href="/devices" transitionTypes={["screen-shift"]} className="rounded-full p-1 text-zinc-300 transition hover:text-white">
           <ArrowLeft className="h-7 w-7" />
         </Link>
-        <h1 className="font-mono text-[34px] font-semibold tracking-tight text-zinc-50">Discover FLO</h1>
+        <h1 className="font-mono text-[34px] font-semibold tracking-tight text-zinc-50">Discover DASH</h1>
       </header>
 
       <section ref={scrollContainerRef} className="relative mt-5 min-h-0 flex-1 overflow-auto rounded-3xl border border-white/10 bg-[#111317] p-6">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_12%,rgba(20,217,204,0.12),rgba(0,0,0,0)_42%),radial-gradient(circle_at_86%_18%,rgba(65,96,140,0.18),rgba(0,0,0,0)_45%)]" />
-
         <div className="relative mx-auto max-w-6xl">
-          <div className="rounded-2xl border border-white/12 bg-black/25 p-5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
-            <p className="font-mono text-[12px] uppercase tracking-[0.08em] text-zinc-500">Roadmap Preview</p>
-            <h2 className="mt-1 font-mono text-[26px] font-semibold text-zinc-100">FLO Capability Path</h2>
-            <p className="mt-2 max-w-2xl font-mono text-[13px] leading-relaxed text-zinc-300">
-              Scroll down to draw the roadmap arrow from the left edge to the right edge, wrapping around upcoming feature sections.
+          <div className="rounded-2xl border border-white/12 bg-black/25 p-5 text-center shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
+            <p className="font-mono text-[12px] uppercase tracking-[0.08em] text-zinc-500">Feature Roadmap</p>
+            <h2 className="mt-1 font-mono text-[26px] font-semibold text-zinc-100">DASH Capability Path</h2>
+            <p className="mx-auto mt-2 max-w-2xl font-mono text-[13px] leading-relaxed text-zinc-300">
+              The agent is a context-aware productivity assistant that helps protect your focus while you work. By understanding what you are doing and how you interact with your computer, it gently nudges you away from distractions and supports sustained concentration through subtle visual, tactile, and behavioral feedback.
             </p>
           </div>
 
@@ -205,14 +232,13 @@ export default function DiscoverFloPage() {
                       minHeight: sectionCardLayouts[index]?.minHeight ?? "18rem",
                     }}
                   >
-                    <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-zinc-500">Section {index + 1}</p>
                     <h3 className="mt-1 flex items-center gap-2 font-mono text-[18px] font-semibold text-zinc-100">
                       <Sparkles className="h-4 w-4 text-accent" />
                       {section}
                     </h3>
                     {index === 0 ? (
-                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-black/35 p-2">
-                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">Context Capture description</p>
+                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-[#0b0f14] p-2">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">The agent captures the context of your work either when you manually mark the start of a task or when it detects that you have entered a flow state. By analyzing the applications you use, what you type, and how you interact with your computer during that moment, it builds an understanding of your current objective, allowing it to distinguish between relevant actions and potential distractions.</p>
                         <div className="cc-stage mt-2">
                           <div className="cc-mouse">
                             <span className="cc-gesture-button" />
@@ -258,8 +284,8 @@ export default function DiscoverFloPage() {
                         </div>
                       </div>
                     ) : index === 1 ? (
-                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-black/35 p-2">
-                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">Distraction Friction simulation</p>
+                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-[#0b0f14] p-2">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">When the system detects movement toward content unrelated to your current task, such as a social media tab, it gently nudges you with subtle mouse resistance and visual cues to reconsider the action.</p>
                         <div className="df-stage mt-2">
                           <div className="df-distraction-tab">
                             <span className="df-tab-label">TikTok FYP</span>
@@ -273,8 +299,8 @@ export default function DiscoverFloPage() {
                         </div>
                       </div>
                     ) : index === 2 ? (
-                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-black/35 p-2">
-                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">Search Intent Drift simulation</p>
+                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-[#0b0f14] p-2">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">When you open a search bar, the agent evaluates whether your query aligns with your current work. Relevant searches proceed normally, while unrelated ones trigger a small visual or tactile reminder.</p>
                         <div className="aie-stage mt-2">
                           <div className="aie-search-shell">
                             <span className="aie-search-icon" />
@@ -288,8 +314,8 @@ export default function DiscoverFloPage() {
                         </div>
                       </div>
                     ) : index === 3 ? (
-                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-black/35 p-2">
-                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">Flow Defense simulation</p>
+                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-[#0b0f14] p-2">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">When the agent detects sustained focus, it enters a low-intervention mode. Notifications are held temporarily and nudges are reduced to protect your flow.</p>
                         <div className="rti-stage mt-2">
                           <div className="rti-user-core">
                             <span className="rti-avatar-dot" />
@@ -304,8 +330,8 @@ export default function DiscoverFloPage() {
                         </div>
                       </div>
                     ) : index === 4 ? (
-                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-black/35 p-2">
-                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">Gentle Re-entry simulation</p>
+                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-[#0b0f14] p-2">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">If a focus session runs too long, the agent may appear to suggest a break. If you want to continue working, you can dismiss it with a quick computer mouse gesture.</p>
                         <div className="gfr-stage mt-2">
                           <div className="gfr-work-panel">
                             <span className="gfr-session-tag">Pomodoro complete</span>
@@ -331,8 +357,8 @@ export default function DiscoverFloPage() {
                         </div>
                       </div>
                     ) : index === 5 ? (
-                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-black/35 p-2">
-                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">Team Agent Collaboration simulation</p>
+                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-[#0b0f14] p-2">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">In team workspaces, agents coordinate with each other. If someone tries to contact you while you are focused, your agent can respond automatically or inform them you are currently in a focus session.</p>
                         <div className="cfm-stage mt-2">
                           <div className="cfm-link cfm-link-a" />
                           <div className="cfm-link cfm-link-b" />
@@ -358,8 +384,8 @@ export default function DiscoverFloPage() {
                         </div>
                       </div>
                     ) : index === 6 ? (
-                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-black/35 p-2">
-                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">Focus Reward simulation</p>
+                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-[#0b0f14] p-2">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">After completing a focus session, the system provides small positive feedback, such as a message or subtle keyboard lighting, to reinforce productive behavior.</p>
                         <div className="rf-stage mt-2">
                           <div className="rf-popup">
                             <span className="rf-popup-face" />
@@ -401,8 +427,8 @@ export default function DiscoverFloPage() {
                         </div>
                       </div>
                     ) : index === 7 ? (
-                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-black/35 p-2">
-                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">Focus Analytics Logging simulation</p>
+                      <div className="mt-4 rounded-xl border border-dashed border-white/24 bg-[#0b0f14] p-2">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">The agent logs your focus sessions and work patterns, giving you insights into productivity trends, common distractions, and your most effective working hours.</p>
                         <div className="eab-stage mt-2">
                           <div className="eab-header">
                             <span>FOCUS LOG</span>
@@ -438,17 +464,17 @@ export default function DiscoverFloPage() {
                 </div>
               ))}
             </div>
-          </div>
 
-          <div className="relative z-40 mt-8 flex items-center justify-center gap-3 pointer-events-auto">
-            <Link
-              href="/flo"
-              transitionTypes={["screen-shift"]}
-              className="relative z-40 inline-flex items-center gap-2 rounded-full border border-white/18 bg-[#060709] px-6 py-2 font-mono text-[14px] font-medium tracking-wide text-zinc-100 transition hover:border-accent hover:text-accent"
-            >
-              Open FLO Dashboard
-              <ChevronRight className="h-4 w-4 text-accent" />
-            </Link>
+            <div className="absolute bottom-0 left-1/2 z-40 flex -translate-x-1/2 items-center justify-center gap-3 pointer-events-auto">
+              <Link
+                href="/dash"
+                transitionTypes={["screen-shift"]}
+                className="relative z-40 inline-flex items-center gap-2 rounded-full border border-white/18 bg-[#060709] px-6 py-2 font-mono text-[14px] font-medium tracking-wide text-zinc-100 transition hover:border-accent hover:text-accent"
+              >
+                Open DASH Dashboard
+                <ChevronRight className="h-4 w-4 text-accent" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>

@@ -15,8 +15,455 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
 import { devices } from "@/data/mockData";
+
+type EmotionName = "happy" | "angry" | "confused" | "sad" | "excited";
+
+type BrowSide = { sy: number; cy: number; ey: number };
+type BrowFrame = { left: BrowSide; right: BrowSide };
+
+type EyeSide = {
+  cx: number;
+  cy: number;
+  arcRx: number;
+  arcRy: number;
+  arcStart: number;
+  arcEnd: number;
+  arcOpacity: number;
+  arcStrokeWidth: number;
+  circleRx: number;
+  circleRy: number;
+  circleFillOpacity: number;
+  circleStrokeOpacity: number;
+  circleStrokeWidth: number;
+};
+
+type EyeFrame = { left: EyeSide; right: EyeSide };
+
+type EmotionFrame = {
+  name: EmotionName;
+  brow: BrowFrame;
+  eyes: EyeFrame;
+};
+
+type RenderFrame = {
+  brow: BrowFrame;
+  eyes: EyeFrame;
+};
+
+const emotionConfig = {
+  durationMs: 650,
+  holdMs: 900,
+  order: ["happy", "angry", "confused", "sad", "excited"] as EmotionName[],
+  colors: {
+    fg: "#d9d9d9",
+    bg: "#000000",
+  },
+  stroke: {
+    browWidth: 12,
+    arcWidth: 8,
+  },
+};
+
+const emotions: Record<EmotionName, EmotionFrame> = {
+  happy: {
+    name: "happy",
+    brow: {
+      left: { sy: 31, cy: 6, ey: 31 },
+      right: { sy: 31, cy: 6, ey: 31 },
+    },
+    eyes: {
+      left: {
+        cx: 55,
+        cy: 84,
+        arcRx: 22,
+        arcRy: 14,
+        arcStart: 180,
+        arcEnd: 359.5,
+        arcOpacity: 1,
+        arcStrokeWidth: 9,
+        circleRx: 11,
+        circleRy: 11,
+        circleFillOpacity: 0,
+        circleStrokeOpacity: 0,
+        circleStrokeWidth: 0,
+      },
+      right: {
+        cx: 165,
+        cy: 84,
+        arcRx: 22,
+        arcRy: 14,
+        arcStart: 180,
+        arcEnd: 359.5,
+        arcOpacity: 1,
+        arcStrokeWidth: 9,
+        circleRx: 11,
+        circleRy: 11,
+        circleFillOpacity: 0,
+        circleStrokeOpacity: 0,
+        circleStrokeWidth: 0,
+      },
+    },
+  },
+  angry: {
+    name: "angry",
+    brow: {
+      left: { sy: 26, cy: 35, ey: 44 },
+      right: { sy: 44, cy: 35, ey: 26 },
+    },
+    eyes: {
+      left: {
+        cx: 55,
+        cy: 82,
+        arcRx: 18,
+        arcRy: 10,
+        arcStart: 180,
+        arcEnd: 359.5,
+        arcOpacity: 0,
+        arcStrokeWidth: 8,
+        circleRx: 13,
+        circleRy: 13,
+        circleFillOpacity: 0,
+        circleStrokeOpacity: 1,
+        circleStrokeWidth: 8,
+      },
+      right: {
+        cx: 165,
+        cy: 82,
+        arcRx: 18,
+        arcRy: 10,
+        arcStart: 180,
+        arcEnd: 359.5,
+        arcOpacity: 0,
+        arcStrokeWidth: 8,
+        circleRx: 13,
+        circleRy: 13,
+        circleFillOpacity: 0,
+        circleStrokeOpacity: 1,
+        circleStrokeWidth: 8,
+      },
+    },
+  },
+  confused: {
+    name: "confused",
+    brow: {
+      left: { sy: 30, cy: 18, ey: 34 },
+      right: { sy: 44, cy: 48, ey: 30 },
+    },
+    eyes: {
+      left: {
+        cx: 55,
+        cy: 82,
+        arcRx: 18,
+        arcRy: 10,
+        arcStart: 180,
+        arcEnd: 359.5,
+        arcOpacity: 0,
+        arcStrokeWidth: 8,
+        circleRx: 11,
+        circleRy: 11,
+        circleFillOpacity: 1,
+        circleStrokeOpacity: 0,
+        circleStrokeWidth: 0,
+      },
+      right: {
+        cx: 165,
+        cy: 82,
+        arcRx: 18,
+        arcRy: 10,
+        arcStart: 180,
+        arcEnd: 359.5,
+        arcOpacity: 0,
+        arcStrokeWidth: 8,
+        circleRx: 11,
+        circleRy: 11,
+        circleFillOpacity: 1,
+        circleStrokeOpacity: 0,
+        circleStrokeWidth: 0,
+      },
+    },
+  },
+  sad: {
+    name: "sad",
+    brow: {
+      left: { sy: 38, cy: 50, ey: 22 },
+      right: { sy: 22, cy: 50, ey: 38 },
+    },
+    eyes: {
+      left: {
+        cx: 55,
+        cy: 84,
+        arcRx: 18,
+        arcRy: 10,
+        arcStart: 180,
+        arcEnd: 359.5,
+        arcOpacity: 0,
+        arcStrokeWidth: 8,
+        circleRx: 10,
+        circleRy: 10,
+        circleFillOpacity: 1,
+        circleStrokeOpacity: 0,
+        circleStrokeWidth: 0,
+      },
+      right: {
+        cx: 165,
+        cy: 84,
+        arcRx: 18,
+        arcRy: 10,
+        arcStart: 180,
+        arcEnd: 359.5,
+        arcOpacity: 0,
+        arcStrokeWidth: 8,
+        circleRx: 10,
+        circleRy: 10,
+        circleFillOpacity: 1,
+        circleStrokeOpacity: 0,
+        circleStrokeWidth: 0,
+      },
+    },
+  },
+  excited: {
+    name: "excited",
+    brow: {
+      left: { sy: 36, cy: 16, ey: 36 },
+      right: { sy: 36, cy: 16, ey: 36 },
+    },
+    eyes: {
+      left: {
+        cx: 55,
+        cy: 82,
+        arcRx: 18,
+        arcRy: 10,
+        arcStart: 180,
+        arcEnd: 359.5,
+        arcOpacity: 0,
+        arcStrokeWidth: 8,
+        circleRx: 13,
+        circleRy: 13,
+        circleFillOpacity: 1,
+        circleStrokeOpacity: 0,
+        circleStrokeWidth: 0,
+      },
+      right: {
+        cx: 165,
+        cy: 82,
+        arcRx: 18,
+        arcRy: 10,
+        arcStart: 180,
+        arcEnd: 359.5,
+        arcOpacity: 0,
+        arcStrokeWidth: 8,
+        circleRx: 13,
+        circleRy: 13,
+        circleFillOpacity: 1,
+        circleStrokeOpacity: 0,
+        circleStrokeWidth: 0,
+      },
+    },
+  },
+};
+
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+
+function easeInOutSmoothstep(t: number) {
+  return t * t * (3 - 2 * t);
+}
+
+function lerp(from: number, to: number, t: number) {
+  return from + (to - from) * t;
+}
+
+function cloneEmotionFrame(frame: EmotionFrame | RenderFrame): RenderFrame {
+  return {
+    brow: {
+      left: { ...frame.brow.left },
+      right: { ...frame.brow.right },
+    },
+    eyes: {
+      left: { ...frame.eyes.left },
+      right: { ...frame.eyes.right },
+    },
+  };
+}
+
+function getEmotion(name: EmotionName) {
+  return emotions[name] ?? emotions.happy;
+}
+
+function mixBrow(from: BrowFrame, to: BrowFrame, e: number): BrowFrame {
+  return {
+    left: {
+      sy: lerp(from.left.sy, to.left.sy, e),
+      cy: lerp(from.left.cy, to.left.cy, e),
+      ey: lerp(from.left.ey, to.left.ey, e),
+    },
+    right: {
+      sy: lerp(from.right.sy, to.right.sy, e),
+      cy: lerp(from.right.cy, to.right.cy, e),
+      ey: lerp(from.right.ey, to.right.ey, e),
+    },
+  };
+}
+
+function mixEyeSide(from: EyeSide, to: EyeSide, e: number): EyeSide {
+  return {
+    cx: lerp(from.cx, to.cx, e),
+    cy: lerp(from.cy, to.cy, e),
+    arcRx: lerp(from.arcRx, to.arcRx, e),
+    arcRy: lerp(from.arcRy, to.arcRy, e),
+    arcStart: lerp(from.arcStart, to.arcStart, e),
+    arcEnd: lerp(from.arcEnd, to.arcEnd, e),
+    arcOpacity: lerp(from.arcOpacity, to.arcOpacity, e),
+    arcStrokeWidth: lerp(from.arcStrokeWidth, to.arcStrokeWidth, e),
+    circleRx: lerp(from.circleRx, to.circleRx, e),
+    circleRy: lerp(from.circleRy, to.circleRy, e),
+    circleFillOpacity: lerp(from.circleFillOpacity, to.circleFillOpacity, e),
+    circleStrokeOpacity: lerp(from.circleStrokeOpacity, to.circleStrokeOpacity, e),
+    circleStrokeWidth: lerp(from.circleStrokeWidth, to.circleStrokeWidth, e),
+  };
+}
+
+function mixEyes(from: EyeFrame, to: EyeFrame, e: number): EyeFrame {
+  return {
+    left: mixEyeSide(from.left, to.left, e),
+    right: mixEyeSide(from.right, to.right, e),
+  };
+}
+
+function interpolateEmotion(fromEmotion: EmotionName, toEmotion: EmotionName, t: number): RenderFrame {
+  const from = getEmotion(fromEmotion);
+  const to = getEmotion(toEmotion);
+  const e = easeInOutSmoothstep(clamp(t, 0, 1));
+
+  return {
+    brow: mixBrow(from.brow, to.brow, e),
+    eyes: mixEyes(from.eyes, to.eyes, e),
+  };
+}
+
+function applyLiveliness(frame: RenderFrame, timeMs: number, intensity = 1): RenderFrame {
+  const out = cloneEmotionFrame(frame);
+  const t = timeMs / 1000;
+  const k = Math.max(0, intensity) * 2.5;
+
+  const jiggleA = Math.sin(t * 7.1) * 0.55;
+  const jiggleB = Math.sin(t * 12.8 + 0.7) * 0.25;
+  const jiggle = (jiggleA + jiggleB) * k * 1.2;
+
+  out.brow.left.sy += jiggle * 0.5;
+  out.brow.left.cy += jiggle * 0.9;
+  out.brow.left.ey += jiggle * 0.55;
+
+  out.brow.right.sy += -jiggle * 0.4;
+  out.brow.right.cy += -jiggle * 0.75;
+  out.brow.right.ey += -jiggle * 0.45;
+
+  const eyeDriftX = (Math.sin(t * 2.2) * 2.2 + Math.sin(t * 5.6 + 0.3) * 0.55) * k * 0.75;
+  const eyeDriftY = (Math.cos(t * 2.5 + 0.8) * 0.95 + Math.sin(t * 4.2) * 0.35) * k * 0.55;
+
+  out.eyes.left.cx += eyeDriftX - 0.3 * k;
+  out.eyes.right.cx += eyeDriftX + 0.3 * k;
+  out.eyes.left.cy += eyeDriftY;
+  out.eyes.right.cy += eyeDriftY;
+
+  const blinkPulse = Math.max(0, Math.sin(t * 2.9 + 0.6)) ** 16;
+  out.eyes.left.arcRy = Math.max(3.2, out.eyes.left.arcRy - blinkPulse * 4.1 * k);
+  out.eyes.right.arcRy = Math.max(3.2, out.eyes.right.arcRy - blinkPulse * 4.1 * k);
+  out.eyes.left.circleRy = Math.max(3, out.eyes.left.circleRy - blinkPulse * 1.05 * k);
+  out.eyes.right.circleRy = Math.max(3, out.eyes.right.circleRy - blinkPulse * 1.05 * k);
+
+  return out;
+}
+
+function polarToCartesian(cx: number, cy: number, rx: number, ry: number, angleDeg: number) {
+  const a = (angleDeg * Math.PI) / 180;
+  return { x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) };
+}
+
+function describeArc(cx: number, cy: number, rx: number, ry: number, startAngle: number, endAngle: number) {
+  const start = polarToCartesian(cx, cy, rx, ry, startAngle);
+  const end = polarToCartesian(cx, cy, rx, ry, endAngle);
+  const delta = ((endAngle - startAngle) % 360 + 360) % 360;
+  const largeArc = delta > 180 ? 1 : 0;
+  return `M ${start.x} ${start.y} A ${rx} ${ry} 0 ${largeArc} 1 ${end.x} ${end.y}`;
+}
+
+function EmotionPreview() {
+  const order = emotionConfig.order;
+  const initial = useMemo(() => cloneEmotionFrame(getEmotion(order[0])), [order]);
+  const [frame, setFrame] = useState<RenderFrame>(initial);
+
+  useEffect(() => {
+    let raf = 0;
+    let fromIdx = 0;
+    let toIdx = 1;
+    let phaseStart = performance.now();
+
+    const tick = (now: number) => {
+      const phaseElapsed = now - phaseStart;
+      const isTransition = phaseElapsed <= emotionConfig.durationMs;
+
+      const nextFrame = isTransition
+        ? interpolateEmotion(order[fromIdx], order[toIdx], phaseElapsed / emotionConfig.durationMs)
+        : cloneEmotionFrame(getEmotion(order[toIdx]));
+
+      setFrame(applyLiveliness(nextFrame, now, 0.45));
+
+      if (phaseElapsed >= emotionConfig.durationMs + emotionConfig.holdMs) {
+        fromIdx = toIdx;
+        toIdx = (toIdx + 1) % order.length;
+        phaseStart = now;
+      }
+
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [order]);
+
+  const browLeft = `M 20 ${frame.brow.left.sy} Q 55 ${frame.brow.left.cy} 90 ${frame.brow.left.ey}`;
+  const browRight = `M 130 ${frame.brow.right.sy} Q 165 ${frame.brow.right.cy} 200 ${frame.brow.right.ey}`;
+
+  return (
+    <div className="relative mx-auto mt-4 w-full max-w-50">
+      <svg viewBox="0 0 220 120" className="h-auto w-full" role="img" aria-label="Animated DASH emotional expression">
+        <path d={browLeft} stroke={emotionConfig.colors.fg} strokeWidth={emotionConfig.stroke.browWidth} strokeLinecap="round" fill="none" />
+        <path d={browRight} stroke={emotionConfig.colors.fg} strokeWidth={emotionConfig.stroke.browWidth} strokeLinecap="round" fill="none" />
+
+        {["left", "right"].map((side) => {
+          const eye = frame.eyes[side as keyof EyeFrame];
+          const arcPath = describeArc(eye.cx, eye.cy, eye.arcRx, eye.arcRy, eye.arcStart, eye.arcEnd);
+          return (
+            <g key={side}>
+              <path
+                d={arcPath}
+                stroke={emotionConfig.colors.fg}
+                strokeWidth={Math.max(eye.arcStrokeWidth, emotionConfig.stroke.arcWidth)}
+                strokeLinecap="round"
+                fill="none"
+                opacity={eye.arcOpacity}
+              />
+              <ellipse
+                cx={eye.cx}
+                cy={eye.cy}
+                rx={Math.max(eye.circleRx, 0)}
+                ry={Math.max(eye.circleRy, 0)}
+                fill={emotionConfig.colors.fg}
+                fillOpacity={eye.circleFillOpacity}
+                stroke={emotionConfig.colors.fg}
+                strokeOpacity={eye.circleStrokeOpacity}
+                strokeWidth={eye.circleStrokeWidth}
+              />
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
 
 export default function DevicesPage() {
   const featuredDevice = devices[0];
@@ -38,12 +485,12 @@ export default function DevicesPage() {
           <span className="h-9 w-px bg-white/20" />
 
           <Link
-            href="/flo"
+            href="/dash"
             transitionTypes={["screen-shift"]}
             className="flex items-center gap-2 text-[18px] font-medium tracking-wide transition hover:text-accent"
           >
             <Bot className="h-4 w-4" strokeWidth={2.25} />
-            <span className="font-mono text-[18px]">FLO</span>
+            <span className="font-mono text-[18px]">DASH</span>
           </Link>
 
           <span className="h-9 w-px bg-white/20" />
@@ -117,23 +564,15 @@ export default function DevicesPage() {
               <p className="font-mono text-left text-[14px] leading-[1.16] font-semibold text-zinc-100">
                 DISCOVER A NEW SENSE OF  FOCUS
                 <br />
-                WITH FLO
+                WITH DASH
               </p>
 
-              <div className="relative mx-auto mt-4 h-45 w-36">
-                <Image
-                  src="/MX-4.png"
-                  alt="MX Master 4 promo"
-                  fill
-                  className="object-contain"
-                  sizes="144px"
-                />
-              </div>
+              <EmotionPreview />
             </div>
 
             <div className="mt-5 flex items-center justify-center gap-3">
               <Link
-                href="/discoverFlo"
+                href="/discoverDash"
                 transitionTypes={["screen-shift"]}
                 className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-[#060709] px-6 py-2 font-mono text-[14px] font-medium tracking-wide text-zinc-100 transition hover:border-accent hover:text-accent"
               >

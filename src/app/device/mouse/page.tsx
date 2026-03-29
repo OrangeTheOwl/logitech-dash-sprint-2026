@@ -14,7 +14,7 @@ export default function MousePage() {
   const [selectedAction, setSelectedAction] = useState("Gesture");
 
   const isGestureButtonSelected = selectedZoneId === "gesture-button";
-  const gestureActionOptions = Array.from(new Set([...actionOptions, "FLO"]));
+  const gestureActionOptions = Array.from(new Set([...actionOptions, "DASH"]));
 
   return (
     <div className="screen-enter flex h-full flex-col overflow-hidden px-5 pb-6 pt-4 sm:px-7">
@@ -116,7 +116,7 @@ export default function MousePage() {
               <div className="space-y-2 overflow-y-auto pr-1">
                 {gestureActionOptions.map((option) => {
                   const isSelected = selectedAction === option;
-                  const isFloOption = option === "FLO";
+                  const isFloOption = option === "DASH";
                   return (
                     <button
                       key={option}
