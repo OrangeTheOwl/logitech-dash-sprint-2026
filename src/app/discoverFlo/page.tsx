@@ -33,7 +33,7 @@ const sectionCardLayouts: Array<{ minHeight: string }> = [
 
 const sectionRowOffsets = [0, 0, 0, 0, 0, 0, 0, 0];
 
-export default function DiscoverDashPage() {
+export default function DiscoverTuskPage() {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const roadmapBlockRef = useRef<HTMLDivElement | null>(null);
   const roadmapPathRef = useRef<SVGPathElement | null>(null);
@@ -183,14 +183,14 @@ export default function DiscoverDashPage() {
         <Link href="/devices" transitionTypes={["screen-shift"]} className="rounded-full p-1 text-zinc-300 transition hover:text-white">
           <ArrowLeft className="h-7 w-7" />
         </Link>
-        <h1 className="font-mono text-[34px] font-semibold tracking-tight text-zinc-50">Discover DASH</h1>
+        <h1 className="font-mono text-[34px] font-semibold tracking-tight text-zinc-50">Discover TUSK</h1>
       </header>
 
       <section ref={scrollContainerRef} className="relative mt-5 min-h-0 flex-1 overflow-auto rounded-3xl border border-white/10 bg-[#111317] p-6">
         <div className="relative mx-auto max-w-6xl">
           <div className="rounded-2xl border border-white/12 bg-black/25 p-5 text-center shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
             <p className="font-mono text-[12px] uppercase tracking-[0.08em] text-zinc-500">Feature Roadmap</p>
-            <h2 className="mt-1 font-mono text-[26px] font-semibold text-zinc-100">DASH Capability Path</h2>
+            <h2 className="mt-1 font-mono text-[26px] font-semibold text-zinc-100">TUSK Capability Path</h2>
             <p className="mx-auto mt-2 max-w-2xl font-mono text-[13px] leading-relaxed text-zinc-300">
               The agent is a context-aware productivity assistant that helps protect your focus while you work. By understanding what you are doing and how you interact with your computer, it gently nudges you away from distractions and supports sustained concentration through subtle visual, tactile, and behavioral feedback.
             </p>
@@ -467,11 +467,11 @@ export default function DiscoverDashPage() {
 
             <div className="absolute bottom-0 left-1/2 z-40 flex -translate-x-1/2 items-center justify-center gap-3 pointer-events-auto">
               <Link
-                href="/dash"
+                href="/tusk"
                 transitionTypes={["screen-shift"]}
                 className="relative z-40 inline-flex items-center gap-2 rounded-full border border-white/18 bg-[#060709] px-6 py-2 font-mono text-[14px] font-medium tracking-wide text-zinc-100 transition hover:border-accent hover:text-accent"
               >
-                Open DASH Dashboard
+                Open TUSK Dashboard
                 <ChevronRight className="h-4 w-4 text-accent" />
               </Link>
             </div>

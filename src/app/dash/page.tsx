@@ -1,1 +1,1 @@
-export { default } from "../flo/page";
+export { default } from "../tusk/page";

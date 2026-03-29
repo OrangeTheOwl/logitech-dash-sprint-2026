@@ -339,7 +339,7 @@ function AgentReasoning({ signals }: { signals: SignalState }) {
       </h2>
       <SectionInfoWindow
         title="Section Guide"
-        description="Explains why DASH believes your focus is stable or drifting. Confidence is computed from live behavior signals and the detected pattern list highlights what changed recently."
+        description="Explains why TUSK believes your focus is stable or drifting. Confidence is computed from live behavior signals and the detected pattern list highlights what changed recently."
         className="top-10"
       />
       <div className="mt-4 rounded-[10px] border border-white/12 bg-black/30 px-4 py-3">
@@ -511,7 +511,7 @@ function InterventionControls({
       </h2>
       <SectionInfoWindow
         title="Section Guide"
-        description="Controls how strongly DASH nudges behavior. Toggle specific interventions on or off, then tune global strength to shift between gentle guidance and stronger correction."
+        description="Controls how strongly TUSK nudges behavior. Toggle specific interventions on or off, then tune global strength to shift between gentle guidance and stronger correction."
         className="top-10"
       />
       <div className="mt-4 space-y-3">
@@ -619,7 +619,7 @@ function ActivityFeed({ items }: { items: FeedItem[] }) {
       </div>
       <SectionInfoWindow
         title="Section Guide"
-        description="Chronological log of detections, interventions, recovery signals, and simulation actions. Use it to understand what DASH observed and how it responded over time."
+        description="Chronological log of detections, interventions, recovery signals, and simulation actions. Use it to understand what TUSK observed and how it responded over time."
         className="top-10"
       />
 
@@ -644,7 +644,7 @@ function ActivityFeed({ items }: { items: FeedItem[] }) {
                     </span>
                     <span className="font-mono text-[11px] text-zinc-500">{item.time}</span>
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-600">DASH</span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-600">TUSK</span>
                 </div>
 
                 <p className="mt-2 font-mono text-[13px] leading-relaxed text-zinc-200">{item.message}</p>
@@ -952,7 +952,7 @@ export default function FloPage() {
           >
             <p className="font-mono text-[11px] uppercase tracking-widest text-[#ff70d8]">TikTok Tab</p>
             <p className="mt-2 font-mono text-[13px] leading-relaxed text-zinc-100">
-              TikTok FYP is pulling attention. As your cursor moves toward this tab, DASH adds pointer friction and guides you back to task flow.
+              TikTok FYP is pulling attention. As your cursor moves toward this tab, TUSK adds pointer friction and guides you back to task flow.
             </p>
             <p className="mt-3 text-center font-mono text-[24px] font-semibold uppercase tracking-[0.06em] text-[#ff8be2]">
               Click Here !!!
@@ -987,7 +987,7 @@ export default function FloPage() {
             <Link href="/devices" transitionTypes={["screen-shift"]} className="rounded-full p-1 text-zinc-300 transition hover:text-white">
               <ArrowLeft className="h-7 w-7" />
             </Link>
-            <h1 className="font-mono text-[34px] font-semibold tracking-tight text-zinc-50">DASH</h1>
+            <h1 className="font-mono text-[34px] font-semibold tracking-tight text-zinc-50">TUSK</h1>
           </header>
 
           <div ref={scrollContainerRef} className="flex-1 space-y-5 overflow-auto pr-1">

@@ -38,7 +38,7 @@ export const actionOptions = [
   "Copy",
   "Paste",
   "Play/Pause",
-  "DASH",
+  "TUSK",
   "None",
 ];
 

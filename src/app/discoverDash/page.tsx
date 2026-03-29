@@ -1,1 +1,1 @@
-export { default } from "../discoverFlo/page";
+export { default } from "../discoverTusk/page";

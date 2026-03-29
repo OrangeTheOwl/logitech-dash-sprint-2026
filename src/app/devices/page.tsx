@@ -429,7 +429,7 @@ function EmotionPreview() {
 
   return (
     <div className="relative mx-auto mt-4 w-full max-w-50">
-      <svg viewBox="0 0 220 120" className="h-auto w-full" role="img" aria-label="Animated DASH emotional expression">
+      <svg viewBox="0 0 220 120" className="h-auto w-full" role="img" aria-label="Animated TUSK emotional expression">
         <path d={browLeft} stroke={emotionConfig.colors.fg} strokeWidth={emotionConfig.stroke.browWidth} strokeLinecap="round" fill="none" />
         <path d={browRight} stroke={emotionConfig.colors.fg} strokeWidth={emotionConfig.stroke.browWidth} strokeLinecap="round" fill="none" />
 
@@ -485,12 +485,12 @@ export default function DevicesPage() {
           <span className="h-9 w-px bg-white/20" />
 
           <Link
-            href="/dash"
+            href="/tusk"
             transitionTypes={["screen-shift"]}
             className="flex items-center gap-2 text-[18px] font-medium tracking-wide transition hover:text-accent"
           >
             <Bot className="h-4 w-4" strokeWidth={2.25} />
-            <span className="font-mono text-[18px]">DASH</span>
+            <span className="font-mono text-[18px]">TUSK</span>
           </Link>
 
           <span className="h-9 w-px bg-white/20" />
@@ -562,7 +562,7 @@ export default function DevicesPage() {
               <p className="font-mono text-left text-[14px] leading-[1.16] font-semibold text-zinc-100">
                 DISCOVER A NEW SENSE OF  FOCUS
                 <br />
-                WITH DASH
+                WITH TUSK
               </p>
 
               <EmotionPreview />
@@ -570,7 +570,7 @@ export default function DevicesPage() {
 
             <div className="mt-5 flex items-center justify-center gap-3">
               <Link
-                href="/discoverDash"
+                href="/discoverTusk"
                 transitionTypes={["screen-shift"]}
                 className="relative inline-flex items-center gap-2 rounded-full border border-accent/70 bg-[#060709] px-6 py-2 font-mono text-[14px] font-medium tracking-wide text-zinc-100 transition hover:border-accent hover:text-accent"
               >
