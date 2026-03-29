@@ -14,7 +14,7 @@ import {
   Waves,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type SignalKey =
   | "mouseActivity"
@@ -644,56 +644,6 @@ function ActivityFeed({ items }: { items: FeedItem[] }) {
   );
 }
 
-function SimulationControls({
-  onScenario,
-}: {
-  onScenario: (scenario: "distraction" | "deep-focus" | "fatigue" | "tab-switch") => void;
-}) {
-  return (
-    <section className="group relative overflow-visible rounded-2xl bg-[#111317] p-5">
-      <h2 className="flex items-center gap-2 font-mono text-[14px] uppercase tracking-[0.08em] text-zinc-400">
-        <Gauge className="h-4 w-4" />
-        Simulation Controls
-      </h2>
-      <SectionInfoWindow
-        title="Section Guide"
-        description="Injects test scenarios to preview FLO reactions without waiting for real behavior changes. Helpful for checking intervention logic and dashboard feedback states."
-        className="top-10"
-      />
-      <div className="mt-4 flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => onScenario("distraction")}
-          className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5 font-mono text-[12px] text-zinc-200 transition hover:border-accent/50"
-        >
-          Simulate distraction
-        </button>
-        <button
-          type="button"
-          onClick={() => onScenario("deep-focus")}
-          className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5 font-mono text-[12px] text-zinc-200 transition hover:border-accent/50"
-        >
-          Simulate deep focus
-        </button>
-        <button
-          type="button"
-          onClick={() => onScenario("fatigue")}
-          className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5 font-mono text-[12px] text-zinc-200 transition hover:border-accent/50"
-        >
-          Simulate fatigue
-        </button>
-        <button
-          type="button"
-          onClick={() => onScenario("tab-switch")}
-          className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5 font-mono text-[12px] text-zinc-200 transition hover:border-accent/50"
-        >
-          Simulate tab switching
-        </button>
-      </div>
-    </section>
-  );
-}
-
 export default function FloPage() {
   const [booting, setBooting] = useState(true);
   const [signals, setSignals] = useState<SignalState>(initialSignals);
@@ -701,12 +651,25 @@ export default function FloPage() {
   const [feed, setFeed] = useState<FeedItem[]>(initialFeed);
   const [strength, setStrength] = useState(36);
   const [sessionMinutes, setSessionMinutes] = useState(22);
+  const [showDistractionWindow, setShowDistractionWindow] = useState(false);
+  const [isInDistractionZone, setIsInDistractionZone] = useState(false);
+  const [virtualCursor, setVirtualCursor] = useState({ x: 0, y: 0 });
+  const [distractionCenter, setDistractionCenter] = useState<{ x: number; y: number } | null>(null);
+  const [hasMousePosition, setHasMousePosition] = useState(false);
   const [toggles, setToggles] = useState<Record<string, boolean>>({
     "Mouse vibration": true,
     "Pointer resistance": true,
     "Screen dimming": false,
     "Break suggestions": true,
   });
+  const distractionWindowRef = useRef<HTMLDivElement | null>(null);
+  const isInDistractionZoneRef = useRef(false);
+  const hasMousePositionRef = useRef(false);
+  const realCursorRef = useRef({ x: 0, y: 0 });
+  const virtualCursorRef = useRef({ x: 0, y: 0 });
+  const distractionCenterRef = useRef<{ x: number; y: number } | null>(null);
+  const showDistractionWindowRef = useRef(false);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -728,6 +691,150 @@ export default function FloPage() {
     }, 2600);
 
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) {
+      return;
+    }
+
+    const updateDistractionVisibility = () => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+      const scrollable = Math.max(1, scrollHeight - clientHeight);
+      const progress = scrollTop / scrollable;
+      const atTop = scrollTop <= 2;
+      const atBottom = scrollTop + clientHeight >= scrollHeight - 2;
+      const visible = progress >= 0.5 && !atTop && !atBottom;
+
+      showDistractionWindowRef.current = visible;
+      setShowDistractionWindow((current) => (current === visible ? current : visible));
+
+      if (!visible) {
+        isInDistractionZoneRef.current = false;
+        setIsInDistractionZone(false);
+      }
+    };
+
+    updateDistractionVisibility();
+    scrollContainer.addEventListener("scroll", updateDistractionVisibility, { passive: true });
+
+    return () => {
+      scrollContainer.removeEventListener("scroll", updateDistractionVisibility);
+    };
+  }, []);
+
+  useEffect(() => {
+    const isInsideExpandedRect = (
+      x: number,
+      y: number,
+      rect: DOMRect,
+      expandBy: { top: number; right: number; bottom: number; left: number },
+    ) => {
+      return (
+        x >= rect.left - expandBy.left &&
+        x <= rect.right + expandBy.right &&
+        y >= rect.top - expandBy.top &&
+        y <= rect.bottom + expandBy.bottom
+      );
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+      const nextPoint = { x: event.clientX, y: event.clientY };
+      realCursorRef.current = nextPoint;
+
+      if (!hasMousePositionRef.current) {
+        hasMousePositionRef.current = true;
+        setHasMousePosition(true);
+        virtualCursorRef.current = nextPoint;
+        setVirtualCursor(nextPoint);
+      }
+
+      if (!showDistractionWindowRef.current) {
+        isInDistractionZoneRef.current = false;
+        setIsInDistractionZone(false);
+        return;
+      }
+
+      const distractionRect = distractionWindowRef.current?.getBoundingClientRect();
+      if (!distractionRect) {
+        return;
+      }
+
+      setDistractionCenter({
+        x: distractionRect.left + distractionRect.width / 2,
+        y: distractionRect.top + distractionRect.height / 2,
+      });
+      distractionCenterRef.current = {
+        x: distractionRect.left + distractionRect.width / 2,
+        y: distractionRect.top + distractionRect.height / 2,
+      };
+
+      const inSlowZone = isInsideExpandedRect(nextPoint.x, nextPoint.y, distractionRect, {
+        top: 160,
+        right: 220,
+        bottom: 180,
+        left: 220,
+      });
+
+      isInDistractionZoneRef.current = inSlowZone;
+      setIsInDistractionZone((current) => (current === inSlowZone ? current : inSlowZone));
+    };
+
+    const handleMouseLeave = () => {
+      isInDistractionZoneRef.current = false;
+      setIsInDistractionZone(false);
+    };
+
+    let animationFrameId = 0;
+
+    const animateCursor = () => {
+      const real = realCursorRef.current;
+      const currentVirtual = virtualCursorRef.current;
+      const shouldSlow = isInDistractionZoneRef.current && showDistractionWindowRef.current;
+      const center = distractionCenterRef.current;
+
+      let sensitivity = 0.5;
+      if (shouldSlow && center) {
+        const distance = Math.hypot(real.x - center.x, real.y - center.y);
+        const proximity = 1 - clamp(distance / 340, 0, 1);
+        const earlyRamp = Math.pow(proximity, 1.7);
+        const steepRamp = Math.pow(proximity, 3.2);
+        sensitivity = clamp(0.38 - earlyRamp * 0.22 - steepRamp * 0.17, 0.0006, 0.45);
+
+        // Start strong friction earlier, not only at the very center.
+        if (distance < 95) {
+          sensitivity = Math.min(sensitivity, 0.0035);
+        }
+
+        // Near the center, almost lock movement to simulate extreme friction.
+        if (distance < 55) {
+          sensitivity = 0.00025;
+        }
+      }
+
+      const nextVirtual = shouldSlow
+        ? {
+            x: currentVirtual.x + (real.x - currentVirtual.x) * sensitivity,
+            y: currentVirtual.y + (real.y - currentVirtual.y) * sensitivity,
+          }
+        : { x: real.x, y: real.y };
+
+      virtualCursorRef.current = nextVirtual;
+      setVirtualCursor(nextVirtual);
+      animationFrameId = requestAnimationFrame(animateCursor);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mouseleave", handleMouseLeave);
+
+    animationFrameId = requestAnimationFrame(animateCursor);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      cancelAnimationFrame(animationFrameId);
+    };
   }, []);
 
   useEffect(() => {
@@ -761,6 +868,17 @@ export default function FloPage() {
       (100 - signals.tabSwitching) * 0.1;
     return clamp(Math.round(score), 0, 100);
   }, [signals]);
+
+  const distractionCursorScale = useMemo(() => {
+    if (!isInDistractionZone || !distractionCenter) {
+      return 1;
+    }
+
+    const distance = Math.hypot(virtualCursor.x - distractionCenter.x, virtualCursor.y - distractionCenter.y);
+    const proximity = 1 - clamp(distance / 320, 0, 1);
+    const easedProximity = proximity * proximity;
+    return 1 + easedProximity * 1.8;
+  }, [distractionCenter, isInDistractionZone, virtualCursor.x, virtualCursor.y]);
 
   const pushFeed = (message: string) => {
     setFeed((current) => [{ id: crypto.randomUUID(), time: nowTime(), message }, ...current]);
@@ -814,8 +932,42 @@ export default function FloPage() {
 
   return (
     <>
-      <div className="screen-enter relative flex h-full flex-col overflow-hidden px-5 pb-6 pt-4 sm:px-7">
+      <div className={`screen-enter relative flex h-full flex-col overflow-hidden px-5 pb-6 pt-4 sm:px-7 ${showDistractionWindow && isInDistractionZone ? "cursor-none" : ""}`}>
         {booting ? <SmileyStartupAnimation /> : null}
+
+        <div
+          className={`pointer-events-none fixed right-16 top-12 z-40 transition-all duration-300 ${
+            showDistractionWindow ? "translate-x-0 opacity-100" : "translate-x-3 opacity-0"
+          }`}
+        >
+          <div
+            ref={distractionWindowRef}
+            className="relative w-68 rounded-2xl border border-[#19e9da]/90 bg-[linear-gradient(160deg,rgba(18,25,31,0.97)_0%,rgba(5,13,16,0.94)_100%)] p-4 shadow-[0_20px_40px_rgba(0,0,0,0.45)]"
+          >
+            <p className="font-mono text-[11px] uppercase tracking-widest text-accent/85">TikTok Tab</p>
+            <p className="mt-2 font-mono text-[13px] leading-relaxed text-zinc-100">
+              TikTok FYP is pulling attention. As your cursor moves toward this tab, FLO adds pointer friction and guides you back to task flow.
+            </p>
+            <div className="mt-3 rounded-lg border border-accent/35 bg-black/30 p-2 font-mono text-[11px] text-zinc-300">
+              Losing focus: <span className={isInDistractionZone ? "text-accent" : "text-zinc-400"}>{isInDistractionZone ? "YES" : "NO"}</span>
+            </div>
+          </div>
+        </div>
+
+        {showDistractionWindow && isInDistractionZone && hasMousePosition ? (
+          <div
+            aria-hidden
+            className="pointer-events-none fixed z-80 h-12 w-12 bg-contain bg-center bg-no-repeat"
+            style={{
+              left: `${virtualCursor.x}px`,
+              top: `${virtualCursor.y}px`,
+              backgroundImage: "url('/Flo_Face.png')",
+              filter: "drop-shadow(0 0 10px rgba(17,239,223,0.55))",
+              transform: `translate(-50%, -50%) scale(${distractionCursorScale})`,
+              transition: "transform 70ms linear",
+            }}
+          />
+        ) : null}
 
         <div
           className={`flex h-full flex-col gap-5 transition-all duration-500 ${
@@ -829,7 +981,7 @@ export default function FloPage() {
             <h1 className="font-mono text-[34px] font-semibold tracking-tight text-zinc-50">FLO</h1>
           </header>
 
-          <div className="flex-1 space-y-5 overflow-auto pr-1">
+          <div ref={scrollContainerRef} className="flex-1 space-y-5 overflow-auto pr-1">
             <AgentStatusCard focusScore={focusScore} sessionMinutes={sessionMinutes} />
 
             <div className="grid gap-5 lg:grid-cols-2">
@@ -845,7 +997,6 @@ export default function FloPage() {
             <div className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
               <div className="space-y-5">
                 <FocusTimeline points={timeline} />
-                <SimulationControls onScenario={handleScenario} />
               </div>
               <div className="space-y-5">
                 <ActivityFeed items={feed} />

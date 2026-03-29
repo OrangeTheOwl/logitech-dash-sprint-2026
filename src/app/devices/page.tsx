@@ -132,13 +132,14 @@ export default function DevicesPage() {
             </div>
 
             <div className="mt-5 flex items-center justify-center gap-3">
-              <button
-                type="button"
+              <Link
+                href="/discoverFlo"
+                transitionTypes={["screen-shift"]}
                 className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-[#060709] px-6 py-2 font-mono text-[14px] font-medium tracking-wide text-zinc-100 transition hover:border-accent hover:text-accent"
               >
                 DISCOVER
                 <ChevronRight className="h-4 w-4 text-accent" />
-              </button>
+              </Link>
               <button
                 type="button"
                 className="grid h-7 w-7 place-items-center rounded-full border border-white/15 bg-black/30 text-zinc-600 transition hover:text-zinc-400"

@@ -1,0 +1,12 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cursorGlow" x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#17EFE0" />
+      <stop offset="1" stop-color="#0FAFA3" />
+    </linearGradient>
+  </defs>
+  <path d="M10 7L30 24L22 26L27 40L21 42L16 28L10 34V7Z" fill="url(#cursorGlow)"/>
+  <path d="M10 7L30 24L22 26L27 40L21 42L16 28L10 34V7Z" stroke="#D2FFFB" stroke-opacity="0.75" stroke-width="1.4"/>
+  <circle cx="34" cy="12" r="5" fill="#17EFE0" fill-opacity="0.25"/>
+  <circle cx="34" cy="12" r="2.3" fill="#E8FFFD"/>
+</svg>
