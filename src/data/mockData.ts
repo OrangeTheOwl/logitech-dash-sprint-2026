@@ -2,8 +2,8 @@ import { DeviceItem, DeviceZone } from "@/types/ui";
 
 export const devices: DeviceItem[] = [
   {
-    id: "mx-master-3s",
-    name: "MX Master 3S Mouse",
+    id: "mx-master-4",
+    name: "MX Master 4 Mouse",
     kind: "mouse",
     status: "Connected",
     connection: "Bluetooth",

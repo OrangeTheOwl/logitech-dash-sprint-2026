@@ -523,8 +523,6 @@ export default function DevicesPage() {
 
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 pt-5 lg:grid-cols-[minmax(0,500px)_minmax(0,500px)] lg:justify-center">
         <section className="relative min-h-90 w-full overflow-hidden rounded-3xl bg-[#111317]">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_36%_34%,rgba(31,35,42,0.9),transparent_42%)]" />
-
           <div className="stage-rise relative flex h-full items-center justify-center">
             <Link
               href={featuredDevice.path}
@@ -574,8 +572,9 @@ export default function DevicesPage() {
               <Link
                 href="/discoverDash"
                 transitionTypes={["screen-shift"]}
-                className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-[#060709] px-6 py-2 font-mono text-[14px] font-medium tracking-wide text-zinc-100 transition hover:border-accent hover:text-accent"
+                className="relative inline-flex items-center gap-2 rounded-full border border-accent/70 bg-[#060709] px-6 py-2 font-mono text-[14px] font-medium tracking-wide text-zinc-100 transition hover:border-accent hover:text-accent"
               >
+                <span className="dot-pulse absolute -right-1 -top-1 h-2 w-2 rounded-full bg-accent" />
                 DISCOVER
                 <ChevronRight className="h-4 w-4 text-accent" />
               </Link>
