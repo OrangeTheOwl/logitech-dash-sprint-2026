@@ -948,14 +948,17 @@ export default function FloPage() {
         >
           <div
             ref={distractionWindowRef}
-            className="relative w-68 rounded-2xl border border-[#19e9da]/90 bg-[linear-gradient(160deg,rgba(18,25,31,0.97)_0%,rgba(5,13,16,0.94)_100%)] p-4 shadow-[0_20px_40px_rgba(0,0,0,0.45)]"
+            className="relative w-68 rounded-2xl border border-[#ff57cf] bg-[#3b0a2d] p-4 shadow-[0_0_18px_rgba(255,87,207,0.25),0_20px_40px_rgba(0,0,0,0.45)]"
           >
-            <p className="font-mono text-[11px] uppercase tracking-widest text-accent/85">TikTok Tab</p>
+            <p className="font-mono text-[11px] uppercase tracking-widest text-[#ff70d8]">TikTok Tab</p>
             <p className="mt-2 font-mono text-[13px] leading-relaxed text-zinc-100">
               TikTok FYP is pulling attention. As your cursor moves toward this tab, DASH adds pointer friction and guides you back to task flow.
             </p>
-            <div className="mt-3 rounded-lg border border-accent/35 bg-black/30 p-2 font-mono text-[11px] text-zinc-300">
-              Losing focus: <span className={isInDistractionZone ? "text-accent" : "text-zinc-400"}>{isInDistractionZone ? "YES" : "NO"}</span>
+            <p className="mt-3 text-center font-mono text-[24px] font-semibold uppercase tracking-[0.06em] text-[#ff8be2]">
+              Click Here !!!
+            </p>
+            <div className="mt-3 rounded-lg border border-[#ff57cf]/55 bg-black/35 p-2 font-mono text-[11px] text-zinc-300">
+              Losing focus: <span className={isInDistractionZone ? "text-[#ff70d8]" : "text-zinc-400"}>{isInDistractionZone ? "YES" : "NO"}</span>
             </div>
           </div>
         </div>
